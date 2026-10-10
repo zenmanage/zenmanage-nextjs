@@ -106,6 +106,69 @@ describe('server helpers', () => {
       });
       await expect(getFlagValue({ ...base, key: 'list' }, [] as number[])).resolves.toEqual([1, 2]);
     });
+
+    it('uses the fallback as the default for a flag that does not exist', async () => {
+      installFakeApi([]);
+
+      await expect(getFlagValue({ ...base, key: 'missing' }, true)).resolves.toBe(true);
+      await expect(getFlagValue({ ...base, key: 'missing' }, 7)).resolves.toBe(7);
+      await expect(getFlagValue({ ...base, key: 'missing' }, 'fallback')).resolves.toBe('fallback');
+      await expect(getFlagValue({ ...base, key: 'missing' }, { color: 'plain' })).resolves.toEqual({
+        color: 'plain',
+      });
+      await expect(getFlagValue({ ...base, key: 'missing' }, [1, 2])).resolves.toEqual([1, 2]);
+    });
+
+    it('uses the fallback when the API is unreachable', async () => {
+      installFakeApi([flag('on', true)]).goOffline();
+
+      await expect(getFlagValue({ ...base, key: 'on' }, false)).resolves.toBe(false);
+      await expect(getFlagValue({ ...base, key: 'theme' }, { color: 'plain' })).resolves.toEqual({
+        color: 'plain',
+      });
+    });
+
+    it('prefers an explicit defaultValue over the fallback, including a falsy one', async () => {
+      installFakeApi([]);
+
+      await expect(
+        getFlagValue({ ...base, key: 'missing', defaultValue: 'chosen' }, 'fallback')
+      ).resolves.toBe('chosen');
+      await expect(
+        getFlagValue({ ...base, key: 'missing', defaultValue: false }, true)
+      ).resolves.toBe(false);
+      await expect(getFlagValue({ ...base, key: 'missing', defaultValue: 0 }, 9)).resolves.toBe(0);
+    });
+
+    it('prefers an entry in the defaults collection over the fallback', async () => {
+      installFakeApi([]);
+      const defaults = DefaultsCollection.fromObject({ missing: 'from-collection' });
+
+      await expect(getFlagValue({ ...base, key: 'missing', defaults }, 'fallback')).resolves.toBe(
+        'from-collection'
+      );
+      // The collection has nothing for this key, so the fallback applies.
+      await expect(getFlagValue({ ...base, key: 'other', defaults }, 'fallback')).resolves.toBe(
+        'fallback'
+      );
+    });
+
+    it('does not let the fallback change a flag that exists', async () => {
+      installFakeApi([flag('on', true)]);
+
+      await expect(getFlagValue({ ...base, key: 'on' }, false)).resolves.toBe(true);
+    });
+
+    it('reports the fallback as the default value in the usage report', async () => {
+      const api = installFakeApi([flag('on', true)]);
+
+      await getFlagValue({ environmentToken: TOKEN, key: 'on' }, false);
+
+      expect(api.usageReports()).toHaveLength(1);
+      expect(JSON.parse(api.usageReports()[0].headers['X-ZEN-DEFAULT-VALUE'])).toEqual({
+        on: false,
+      });
+    });
   });
 
   describe('client sharing', () => {

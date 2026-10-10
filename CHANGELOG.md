@@ -1,5 +1,11 @@
 # @zenmanage/nextjs
 
+## 1.0.1
+
+### Fixed
+
+- `getFlagValue(input, fallback)` now uses `fallback` as the default. Before, it only chose the return type, so a flag that doesn't exist, or an API that can't be reached, threw `Flag not found` unless you also passed `defaultValue`. A `defaultValue` in the input, or an entry for the key in `defaults`, still wins over `fallback`. The usage report for the flag now carries the fallback as its default value too.
+
 ## 1.0.0
 
 First public release. The API below is the 1.0 surface, and semantic versioning applies from here. The Changed, Removed, and Fixed entries are relative to the internal 0.1.0 snapshot.

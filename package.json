@@ -1,6 +1,6 @@
 {
   "name": "@zenmanage/nextjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Next.js integration helpers for Zenmanage feature flags: server evaluation, middleware, and hydration-safe client bootstrap",
   "keywords": [
     "nextjs",

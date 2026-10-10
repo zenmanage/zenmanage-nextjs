@@ -84,6 +84,8 @@ All of them take your server key as `environmentToken`, plus the optional `apiEn
 | `createServerClient(options)`   | `Zenmanage`        | Get the shared SDK client. See the note below.                                           |
 | `clearServerClients()`          | `void`             | Drop every shared client and its cache. Useful in tests.                                 |
 
+`getFlagValue` returns `fallback` for a flag that doesn't exist, or when the API can't be reached. A `defaultValue` in the input, or an entry for the key in `defaults`, wins over it.
+
 ### Caching
 
 Clients are shared per configuration (token, endpoint, TTL, usage setting and logger) for the life of the server process or Edge isolate. Rules are cached for 60 seconds unless you set `cacheTtl`. After that the next call fetches them again, so a flag change reaches your server within a minute.
