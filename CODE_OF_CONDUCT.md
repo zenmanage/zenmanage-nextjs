@@ -32,8 +32,7 @@ an individual is representing the project.
 
 ## Contact
 
-For reporting violations, open a private security/advisory report or contact the
-maintainers via the project organization.
+For reporting violations, email hello@zenmanage.com.
 
 ## Attribution
 

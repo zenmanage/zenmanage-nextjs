@@ -1,35 +1,42 @@
+import type { ReactElement } from 'react';
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { Context } from '@zenmanage/sdk';
-import { buildBootstrapPayload, getServerFlag } from '@zenmanage/nextjs';
+import { getBootstrapPayload, type BootstrapPayload } from '@zenmanage/nextjs';
+import { NextFlagsProvider, useFlag } from '@zenmanage/nextjs/client';
 
 interface PageProps {
-  enabled: boolean;
-  bootstrapPayload: ReturnType<typeof buildBootstrapPayload>;
+  bootstrapPayload: BootstrapPayload;
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (ctx) => {
   const userId = (ctx.req.headers['x-user-id'] as string | undefined) ?? 'anonymous';
-  const context = Context.single('user', userId);
 
-  const flag = await getServerFlag({
+  const bootstrapPayload = await getBootstrapPayload({
     environmentToken: process.env.ZENMANAGE_ENVIRONMENT_TOKEN!,
-    key: 'pages-router-checkout-v2',
-    defaultValue: false,
-    context,
+    context: Context.single('user', userId),
+    keys: ['pages-router-checkout-v2'],
+    includeContext: true,
   });
 
-  return {
-    props: {
-      enabled: flag.asBool(),
-      bootstrapPayload: buildBootstrapPayload({
-        'pages-router-checkout-v2': flag.asBool(),
-      }),
-    },
-  };
+  // Props are serialized to JSON, which a payload (plain data) survives unchanged.
+  return { props: { bootstrapPayload } };
 };
 
 export default function PagesRouterExample({
-  enabled,
-}: InferGetServerSidePropsType<typeof getServerSideProps>): JSX.Element {
+  bootstrapPayload,
+}: InferGetServerSidePropsType<typeof getServerSideProps>): ReactElement {
+  return (
+    <NextFlagsProvider
+      environmentToken={process.env.NEXT_PUBLIC_ZENMANAGE_ENVIRONMENT_TOKEN!}
+      bootstrapPayload={bootstrapPayload}
+    >
+      <Checkout />
+    </NextFlagsProvider>
+  );
+}
+
+function Checkout(): ReactElement {
+  const { value: enabled } = useFlag('pages-router-checkout-v2', false);
+
   return <div>{enabled ? 'Pages Router V2' : 'Pages Router V1'}</div>;
 }

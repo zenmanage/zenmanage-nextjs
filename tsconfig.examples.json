@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "@zenmanage/nextjs": ["./src/index.ts"],
+      "@zenmanage/nextjs/server": ["./src/server.ts"],
+      "@zenmanage/nextjs/middleware": ["./src/middleware.ts"],
+      "@zenmanage/nextjs/client": ["./src/client.ts"]
+    }
+  },
+  "include": ["examples/*.ts", "examples/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

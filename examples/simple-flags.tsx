@@ -1,6 +1,7 @@
+import type { ReactElement } from 'react';
 import { getServerFlag } from '@zenmanage/nextjs';
 
-export default async function SimpleFlagsExample(): Promise<JSX.Element> {
+export default async function SimpleFlagsExample(): Promise<ReactElement> {
   const feature = await getServerFlag({
     environmentToken: process.env.ZENMANAGE_ENVIRONMENT_TOKEN!,
     key: 'new-dashboard',

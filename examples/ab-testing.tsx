@@ -1,7 +1,8 @@
+import type { ReactElement } from 'react';
 import { Context } from '@zenmanage/sdk';
 import { getFlagValue } from '@zenmanage/nextjs';
 
-export default async function AbTestingExample(): Promise<JSX.Element> {
+export default async function AbTestingExample(): Promise<ReactElement> {
   const context = Context.single('user', 'user-123');
 
   const variant = await getFlagValue(
@@ -17,10 +18,10 @@ export default async function AbTestingExample(): Promise<JSX.Element> {
   return variant === 'one-page' ? <OnePageCheckout /> : <MultiPageCheckout />;
 }
 
-function OnePageCheckout(): JSX.Element {
+function OnePageCheckout(): ReactElement {
   return <div>One-page checkout</div>;
 }
 
-function MultiPageCheckout(): JSX.Element {
+function MultiPageCheckout(): ReactElement {
   return <div>Multi-page checkout</div>;
 }

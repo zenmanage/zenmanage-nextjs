@@ -1,0 +1,20 @@
+# Keeps the npm dependencies and the GitHub Actions used by the workflows up to date.
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+
+  # The smoke app is built and run by `npm run test:smoke` against several Next.js versions.
+  - package-ecosystem: 'npm'
+    directory: '/examples/smoke-app'
+    schedule:
+      interval: 'weekly'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'

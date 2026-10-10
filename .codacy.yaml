@@ -1,0 +1,16 @@
+---
+# Opengrep's browser-XSS and SSRF rules look for user-controlled data reaching innerHTML or fetch.
+# Neither exists where they fire here:
+#
+# - tests/ builds jsdom fixtures from this package's own output (a bootstrap <script> tag, or the
+#   markup renderToString returns for fixed test components) and has to parse them as HTML to test
+#   escaping and hydration.
+# - scripts/ is the smoke-test harness. It is not published (see "files" in package.json) and only
+#   ever fetches the loopback server it starts itself.
+#
+# Every other engine still analyses both directories.
+engines:
+  opengrep:
+    exclude_paths:
+      - tests/**
+      - scripts/**
