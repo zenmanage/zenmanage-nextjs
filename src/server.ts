@@ -127,12 +127,19 @@ export async function preloadServerFlags(input: ServerFlagsInput): Promise<FlagM
  * Evaluates a flag and returns its value as the type of `fallback`: a boolean, number or
  * string, or a JSON object or array. A literal fallback (`'control'`, `false`) gives the
  * widened type (`string`, `boolean`), so the result can be compared with other values.
+ *
+ * `fallback` is also the default, for a flag that doesn't exist or when the API can't be
+ * reached. A `defaultValue` in `input`, or an entry for the key in `input.defaults`, is more
+ * specific and wins over it.
  */
 export async function getFlagValue<T extends FlagValue>(
   input: ServerFlagInput,
   fallback: T
 ): Promise<WidenFlagValue<T>> {
-  const flag = await getServerFlag(input);
+  // The SDK prefers an inline default over a defaults collection, so the fallback only goes in
+  // when nothing else would supply one. Otherwise it would override the collection's entry.
+  const hasOwnDefault = input.defaultValue !== undefined || input.defaults?.has(input.key) === true;
+  const flag = await getServerFlag(hasOwnDefault ? input : { ...input, defaultValue: fallback });
 
   if (typeof fallback === 'boolean') {
     return flag.asBool() as WidenFlagValue<T>;
