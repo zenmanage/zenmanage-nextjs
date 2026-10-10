@@ -1,7 +1,8 @@
 tests/
 examples/
+scripts/
 .github/
-docs/
+.changeset/
 coverage/
 *.log
 *.tsbuildinfo

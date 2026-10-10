@@ -1,4 +1,4 @@
-import { Attribute, Context } from '@zenmanage/sdk';
+import { Attribute, Context, type Flag } from '@zenmanage/sdk';
 import { getServerFlag } from './server';
 import type {
   BuildRequestContextOptions,
@@ -32,6 +32,49 @@ function getRequestPath(request: RequestLike): string {
   return '/';
 }
 
+function decodeHeader(value: string | null): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+// Next.js 15 removed `request.ip` and `request.geo`, so read what the platform forwards.
+function getIp(request: RequestLike): string | undefined {
+  if (request.ip) {
+    return request.ip;
+  }
+
+  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+  return forwarded || request.headers.get('x-real-ip') || undefined;
+}
+
+function getGeo(request: RequestLike): { country?: string; region?: string; city?: string } {
+  const { headers, geo } = request;
+
+  // Next.js 14 and earlier set `request.geo` even when nothing fills it in (it is `{}` when
+  // self-hosted), so each field falls back to the headers on its own.
+  return {
+    country:
+      geo?.country ||
+      headers.get('x-vercel-ip-country') ||
+      headers.get('cf-ipcountry') ||
+      undefined,
+    region: geo?.region || headers.get('x-vercel-ip-country-region') || undefined,
+    city: geo?.city || decodeHeader(headers.get('x-vercel-ip-city')),
+  };
+}
+
+/**
+ * Builds an evaluation context from a request: an identifier (cookie, then header), the path,
+ * the user agent and, when the platform reports it, the visitor's location. Works with
+ * `NextRequest` and with a plain `Request`.
+ */
 export function buildContextFromRequest(
   request: RequestLike,
   options: BuildRequestContextOptions = {}
@@ -39,7 +82,7 @@ export function buildContextFromRequest(
   const identifierCookieName = options.identifierCookieName ?? 'zenmanage_user_id';
   const identifierHeaderName = options.identifierHeaderName ?? 'x-zenmanage-user-id';
   const includeGeo = options.includeGeo ?? true;
-  const includeIp = options.includeIp ?? true;
+  const includeIp = options.includeIp ?? false;
 
   const identifier =
     getCookieValue(request.cookies, identifierCookieName) ??
@@ -53,24 +96,26 @@ export function buildContextFromRequest(
     context.addAttribute(new Attribute('user-agent', [userAgent]));
   }
 
-  const path = getRequestPath(request);
-  context.addAttribute(new Attribute('path', [path]));
+  context.addAttribute(new Attribute('path', [getRequestPath(request)]));
 
-  if (includeIp && request.ip) {
-    context.addAttribute(new Attribute('ip', [request.ip]));
+  const ip = includeIp ? getIp(request) : undefined;
+  if (ip) {
+    context.addAttribute(new Attribute('ip', [ip]));
   }
 
-  if (includeGeo && request.geo) {
-    if (request.geo.country) {
-      context.addAttribute(new Attribute('country', [request.geo.country]));
+  if (includeGeo) {
+    const geo = getGeo(request);
+
+    if (geo.country) {
+      context.addAttribute(new Attribute('country', [geo.country]));
     }
 
-    if (request.geo.region) {
-      context.addAttribute(new Attribute('region', [request.geo.region]));
+    if (geo.region) {
+      context.addAttribute(new Attribute('region', [geo.region]));
     }
 
-    if (request.geo.city) {
-      context.addAttribute(new Attribute('city', [request.geo.city]));
+    if (geo.city) {
+      context.addAttribute(new Attribute('city', [geo.city]));
     }
   }
 
@@ -88,7 +133,11 @@ export function buildContextFromRequest(
   return context;
 }
 
-export async function evaluateMiddlewareFlag(input: MiddlewareFlagInput) {
+/**
+ * Evaluates one flag for the request. Runs on the Edge runtime (`middleware.ts`) and on the
+ * Node.js runtime (`proxy.ts` in Next.js 16), and needs a server key in both.
+ */
+export async function evaluateMiddlewareFlag(input: MiddlewareFlagInput): Promise<Flag> {
   const context = buildContextFromRequest(input.request, input.requestContext);
 
   return getServerFlag({
