@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/@zenmanage%2Fnextjs.svg)](https://www.npmjs.com/package/@zenmanage/nextjs)
 [![Build Status](https://github.com/zenmanage/zenmanage-nextjs/actions/workflows/ci.yml/badge.svg)](https://github.com/zenmanage/zenmanage-nextjs/actions/workflows/ci.yml)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/b810a0a8c29f4af2a4013e29192b861e)](https://app.codacy.com/gh/zenmanage/zenmanage-nextjs/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
 Feature flags for Next.js. Evaluate flags in Server Components, route handlers, `getServerSideProps` and middleware, and hand the results to Client Components so the first paint is already right.
