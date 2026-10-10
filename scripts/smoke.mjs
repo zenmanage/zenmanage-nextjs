@@ -23,6 +23,7 @@ import {
 } from 'node:fs';
 import { createServer as createHttpServer } from 'node:http';
 import { createServer as createHttpsServer } from 'node:https';
+import { createServer as createNetServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -159,6 +160,18 @@ async function waitForServer(url, attempts = 60) {
   throw new Error(`Next.js did not start serving ${url}`);
 }
 
+// Asks the OS for an unused port, so two runs on one machine don't collide.
+function freePort() {
+  return new Promise((done, fail) => {
+    const server = createNetServer();
+    server.once('error', fail);
+    server.listen(0, '127.0.0.1', () => {
+      const { port } = server.address();
+      server.close(() => done(port));
+    });
+  });
+}
+
 function filesUnder(directory) {
   return readdirSync(directory).flatMap((entry) => {
     const path = join(directory, entry);
@@ -221,7 +234,7 @@ async function main() {
 
   run('npx', ['next', 'build'], { cwd: appDir, env });
 
-  nextPort = 3100 + Math.floor(Math.random() * 800);
+  nextPort = await freePort();
   nextServer = spawn('npx', ['next', 'start', '-p', String(nextPort)], {
     cwd: appDir,
     env,
