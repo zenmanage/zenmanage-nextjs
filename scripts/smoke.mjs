@@ -148,16 +148,16 @@ async function startMockApi() {
   return `http://127.0.0.1:${await listen(apiServer)}`;
 }
 
-async function waitForServer(url, attempts = 60) {
+async function waitForServer(path, attempts = 60) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
-      if ((await fetch(url)).ok) return;
+      if ((await fetch(localUrl(path))).ok) return;
     } catch {
       // Not listening yet.
     }
     await new Promise((done) => setTimeout(done, 500));
   }
-  throw new Error(`Next.js did not start serving ${url}`);
+  throw new Error(`Next.js did not start serving ${path}`);
 }
 
 // Asks the OS for an unused port, so two runs on one machine don't collide.
@@ -180,11 +180,24 @@ function filesUnder(directory) {
 }
 
 async function get(path, headers = {}) {
-  const response = await fetch(`http://127.0.0.1:${nextPort}${path}`, { headers });
+  const response = await fetch(localUrl(path), { headers });
   return { status: response.status, body: await response.text() };
 }
 
 let nextPort;
+
+// The harness only ever talks to the app it started. Take a path, build the URL from the
+// known origin, and refuse anything that resolves elsewhere (an absolute or `//host` URL).
+function localUrl(path) {
+  const origin = `http://127.0.0.1:${nextPort}`;
+  const url = new URL(path, origin);
+
+  if (url.origin !== origin) {
+    throw new Error(`Refusing to fetch ${path}: it is not on ${origin}`);
+  }
+
+  return url;
+}
 
 async function main() {
   const apiUrl = await startMockApi();
@@ -241,7 +254,7 @@ async function main() {
     stdio: ['ignore', 'inherit', 'inherit'],
     detached: true,
   });
-  await waitForServer(`http://127.0.0.1:${nextPort}/api/flag`);
+  await waitForServer('/api/flag');
 
   // App Router: a Server Component, and a Client Component rendered on the server.
   const home = await get('/');
