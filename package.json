@@ -112,7 +112,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
-    "@typescript-eslint/parser": "^6.20.0",
+    "@typescript-eslint/parser": "^8.71.2",
     "@vitest/coverage-v8": "^1.6.0",
     "@zenmanage/react": "^1.0.0",
     "@zenmanage/sdk": "^3.5.0",
