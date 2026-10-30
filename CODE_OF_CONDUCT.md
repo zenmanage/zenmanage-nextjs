@@ -1,39 +1,25 @@
-# Code of Conduct
+# Contributor Covenant Code of Conduct
 
 ## Our Pledge
 
-We as members, contributors, and maintainers pledge to make participation in our
+We as members, contributors, and leaders pledge to make participation in our
 community a harassment-free experience for everyone.
 
 ## Our Standards
 
-Examples of behavior that contributes to a positive environment:
+Examples of behavior that contributes to a positive environment include:
 
-- Being respectful and inclusive
-- Accepting constructive feedback
-- Focusing on what is best for the community
-
-Examples of unacceptable behavior:
-
-- Harassment, insults, or discriminatory language
-- Trolling, personal attacks, or public/private abuse
-- Publishing private information without permission
+- Demonstrating empathy and kindness
+- Being respectful of differing opinions and experiences
+- Giving and gracefully accepting constructive feedback
+- Taking responsibility and apologizing to those affected by mistakes
 
 ## Enforcement
 
-Project maintainers are responsible for clarifying and enforcing standards.
-They may remove, edit, or reject comments, commits, code, and other contributions
-that do not align with this Code of Conduct.
+Community leaders are responsible for clarifying and enforcing standards of
+acceptable behavior and will take appropriate and fair corrective action in
+response to behavior they deem inappropriate, threatening, offensive, or harmful.
 
-## Scope
+## Reporting
 
-This Code of Conduct applies within all project spaces and in public spaces when
-an individual is representing the project.
-
-## Contact
-
-For reporting violations, email hello@zenmanage.com.
-
-## Attribution
-
-Inspired by the Contributor Covenant, version 2.1.
+Report incidents to hello@zenmanage.com.
