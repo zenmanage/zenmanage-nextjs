@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Updated the development dependencies `vitest`, `prettier` and `@zenmanage/sdk` (the copy used for tests). No changes to the published package.
+- Updated the development dependencies `vitest`, `prettier`, `next`, `eslint`, `typescript-eslint` and `@zenmanage/sdk` (the copy used for tests). No changes to the published package.
 
 ## 1.0.1
 
