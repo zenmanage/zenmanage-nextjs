@@ -1,5 +1,11 @@
 # @zenmanage/nextjs
 
+## 1.0.4
+
+### Changed
+
+- Updated the development dependencies `vitest`, `prettier`, `next`, `eslint`, `typescript-eslint` and `@zenmanage/sdk` (the copy used for tests). No changes to the published package.
+
 ## 1.0.1
 
 ### Fixed
