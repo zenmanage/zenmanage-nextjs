@@ -114,6 +114,7 @@
     "@types/react-dom": "^19.2.0",
     "@typescript-eslint/eslint-plugin": "^8.72.0",
     "@typescript-eslint/parser": "^8.72.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^5.0.5",
     "@zenmanage/react": "^1.0.0",
     "@zenmanage/sdk": "^3.5.0",
@@ -128,7 +129,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tsup": "^9.0.0",
-    "typescript": "^5.6.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vitest": "^5.0.5"
   },
   "engines": {
