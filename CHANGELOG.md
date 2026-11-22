@@ -1,5 +1,11 @@
 # @zenmanage/nextjs
 
+## 1.0.5
+
+### Patch Changes
+
+- f61f487: Build and type-check with TypeScript 7. No changes to the public API or runtime behavior.
+
 ## 1.0.4
 
 ### Changed
